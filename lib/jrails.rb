@@ -80,7 +80,7 @@ module ActionView
             insertion = position.to_s.downcase
             insertion = 'append' if insertion == 'bottom'
             insertion = 'prepend' if insertion == 'top'
-            call "#{JQUERY_VAR}(\"#{jquery_id(id)}\").#{insertion}", render(*options_for_render)
+            call "#{JQUERY_VAR}('#{jquery_id(id)}').#{insertion}", render(*options_for_render)
           end
           
           def replace_html(id, *options_for_render)
@@ -88,23 +88,23 @@ module ActionView
           end
           
           def replace(id, *options_for_render)
-            call "#{JQUERY_VAR}(\"#{jquery_id(id)}\").replaceWith", render(*options_for_render)
+            call "#{JQUERY_VAR}('#{jquery_id(id)}').replaceWith", render(*options_for_render)
           end
           
           def remove(*ids)
-            call "#{JQUERY_VAR}(\"#{jquery_ids(ids)}\").remove"
+            call "#{JQUERY_VAR}('#{jquery_ids(ids)}').remove"
           end
           
           def show(*ids)
-            call "#{JQUERY_VAR}(\"#{jquery_ids(ids)}\").show"
+            call "#{JQUERY_VAR}('#{jquery_ids(ids)}').show"
           end
           
           def hide(*ids)
-            call "#{JQUERY_VAR}(\"#{jquery_ids(ids)}\").hide"
+            call "#{JQUERY_VAR}('#{jquery_ids(ids)}').hide"
           end
 
           def toggle(*ids)
-            call "#{JQUERY_VAR}(\"#{jquery_ids(ids)}\").toggle"
+            call "#{JQUERY_VAR}('#{jquery_ids(ids)}').toggle"
           end
           
           def jquery_id(id)
@@ -132,7 +132,7 @@ module ActionView
         if options[:form]
           js_options['data'] = "#{JQUERY_VAR}.param(#{JQUERY_VAR}(this).serializeArray())"
         elsif options[:submit]
-          js_options['data'] = "#{JQUERY_VAR}(\"##{options[:submit]} :input\").serialize()"
+          js_options['data'] = "#{JQUERY_VAR}('##{options[:submit]} :input').serialize()"
         elsif options[:with]
           js_options['data'] = options[:with].gsub("Form.serialize(this.form)","#{JQUERY_VAR}.param(#{JQUERY_VAR}(this.form).serializeArray())")
         end
@@ -237,7 +237,7 @@ module ActionView
       def initialize(generator, id)
         id = id.to_s.count('#.*,>+~:[/ ') == 0 ? "##{id}" : id
         @id = id
-        super(generator, "#{JQUERY_VAR}(\"#{id}\")")
+        super(generator, "#{JQUERY_VAR}('#{id}')")
       end
       
       def replace_html(*options_for_render)
@@ -330,13 +330,11 @@ module ActionView
         end
         
         if ['fadeIn','fadeOut','fadeToggle'].include?(name)
-          #	090905 - Jake - changed ' to \" so it passes assert_select_rjs with an id
-          javascript = "#{JQUERY_VAR}(\"#{jquery_id(element_id)}\").#{name}("
+          javascript = "#{JQUERY_VAR}('#{jquery_id(element_id)}').#{name}("
           javascript << "#{speed}" unless speed.nil?
           javascript << ");"
         else
-          #	090905 - Jake - changed ' to \" so it passes "assert_select_rjs :effect, ID"
-          javascript = "#{JQUERY_VAR}(\"#{jquery_id(element_id)}\").#{mode || 'effect'}('#{name}'"
+          javascript = "#{JQUERY_VAR}('#{jquery_id(element_id)}').#{mode || 'effect'}('#{name}'"
           javascript << ",#{options_for_javascript(js_options)}" unless speed.nil? && js_options.empty?
           javascript << ",#{speed}" unless speed.nil?
           javascript << ");"
